@@ -1,0 +1,200 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="color-scheme" content="light"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dalles nervurées – Eurocode 2</title>
+<style>
+:root{color-scheme:light;--bg:#f4f5f7;--c:#fff;--t:#1d2433;--m:#667085;--a:#1f4e8c;--ok:#157f3b;--ko:#c0262d;--b:#d5d9e0}
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,Arial,sans-serif;background:var(--bg);color:var(--t)}
+header{background:var(--a);color:#fff;padding:12px 18px}header h1{margin:0;font-size:18px}header small{opacity:.85}
+nav{display:flex;gap:4px;padding:8px 14px;background:var(--c);border-bottom:1px solid var(--b);flex-wrap:wrap}
+nav button{border:0;background:none;color:var(--m);padding:8px 14px;font-weight:600;cursor:pointer;border-radius:6px}nav button.on{background:var(--a);color:#fff}
+main{padding:14px;max-width:1300px;margin:auto}.tab{display:none}.tab.on{display:block}
+.g{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:14px}@media(max-width:900px){.g{grid-template-columns:1fr}}
+.card{background:var(--c);border:1px solid var(--b);border-radius:8px;padding:12px;margin-bottom:12px;overflow-x:auto}
+.card h3{margin:0 0 8px;font-size:14px;color:var(--a);text-transform:uppercase;letter-spacing:.3px}
+label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0;font-size:13px}label span{color:var(--m)}
+input,select{width:130px;padding:4px 6px;border:1px solid var(--b);border-radius:5px;background:var(--bg);color:var(--t);font:inherit}
+table{border-collapse:collapse;width:100%}td,th{padding:4px 8px;border-bottom:1px solid var(--b);text-align:left}th{background:var(--bg);font-size:12px}
+td.v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}.ok{color:var(--ok)}.ko{color:var(--ko)}
+.ban{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.ban div{flex:1;min-width:130px;padding:8px;border-radius:8px;border:2px solid;background:var(--c);font-weight:700;text-align:center}
+.ban .ok{border-color:var(--ok)}.ban .ko{border-color:var(--ko)}.ban small{display:block;font-weight:400;color:var(--m)}
+button.b{background:var(--a);color:#fff;border:0;padding:7px 12px;border-radius:6px;cursor:pointer;font-weight:600;margin:2px}button.s{background:var(--bg);color:var(--t);border:1px solid var(--b)}
+svg text{fill:var(--t);font:11px system-ui}.note{color:var(--m);font-size:12px}
+footer.sig{margin-top:14px;padding-top:6px;border-top:1px solid var(--b);font-size:12px;color:var(--m);text-align:center}
+@media print{header,nav,.no{display:none!important}body{background:#fff;color:#000}.card{border-color:#999}}
+</style></head><body>
+<header><h1>Dalles nervurées – Eurocode 2</h1><small>Prédimensionnement · ELU · effort tranchant · ELS · fissuration · flèche · cahier de ferraillage</small></header>
+<nav><button data-t="t1" class="on">1 · Prédimensionnement</button><button data-t="t2">2 · Calcul d'une nervure</button><button data-t="t3">3 · Cahier de ferraillage</button><button data-t="t4">4 · Métré</button></nav>
+<main>
+<section id="t1" class="tab on"><div class="card"><h3>Épaisseur de la dalle nervurée (h = f(L, Q))</h3>
+<table id="pre"></table><p class="no"><button class="b" onclick="addLoc()">+ Local</button></p>
+<p class="note">Règle du classeur : h = L/20 si L ≥ 6 m et Q ≥ 4 ; sinon h = L/22,5. Choix : h &lt; 0,16 → 12+4 · 0,16–0,20 → 16+4 · 0,20–0,24 → 20+4 · sinon 25+5. Légende indicative : faible charge/petite portée L/25 · charge et portée moyennes L/22,5 · forte charge/grande portée L/20.</p></div></section>
+
+<section id="t2" class="tab"><div class="g"><div id="form"></div><div><div class="ban" id="ban"></div><div id="res"></div></div></div></section>
+
+<section id="t3" class="tab"><div class="card"><h3>Tableau des nervures</h3>
+<label style="justify-content:flex-start"><span>Ouvrage / niveau :</span><input id="ouv" style="width:320px" value="PLANCHER HAUT RDC"></label>
+<div id="cah"></div><p class="no"><button class="b" onclick="window.print()">Imprimer / PDF</button><button class="b s" onclick="csv()">Export CSV</button></p></div>
+<div class="card"><h3>Plan de ferraillage des nervures</h3><div id="plan"></div><p class="note">Répartition (parallèle aux nervures) HA6 e=20 · principaux (perpendiculaires aux nervures) HA6 e=20 · ① ② armatures inférieures (crochets d'ancrage 15φ aux appuis) · ③ chapeau · ④ épingles · Chpx : voir plan de coffrage.</p></div>
+<footer class="sig">Mouhamed Ousseynou FAYE, Ing conception G.C, 00 221 77 673 53 13, mouhamedfaye981@gmail.com</footer></section>
+
+<section id="t4" class="tab"><div class="card"><h3>Hypothèses du métré</h3>
+<label><span>Crochet d'ancrage ①② (× φ)</span><input type="number" id="mcr" step="1"></label>
+<label><span>Coefficient de majoration</span><input type="number" id="mmaj" step=".01"></label>
+<label><span>Pas des propositions (kg)</span><input type="number" id="mpas" step="10"></label>
+<p class="note">Poids = D² × L × 1,15 / 162 (D en mm, L en m, résultat en kg). ①② : Lx + 2 crochets ; ③ chapeau : Lx ; ④ épingles : nombre = Lx / e, longueur = (h − 2·Cnom) + 2 crochets de max(5φ ; 50 mm), × nombre de brins.</p></div>
+<div id="met"></div>
+<p class="no"><button class="b" onclick="window.print()">Imprimer / PDF</button><button class="b s" onclick="csvM()">Export CSV</button></p>
+<footer class="sig">Mouhamed Ousseynou FAYE, Ing conception G.C, 00 221 77 673 53 13, mouhamedfaye981@gmail.com</footer></section>
+</main>
+<script>
+const BET={"C12/15":[12,1.6,27,20],"C16/20":[16,1.9,29,24],"C20/25":[20,2.2,30,28],"C25/30":[25,2.6,31,33],"C30/37":[30,2.9,33,38],"C35/45":[35,3.2,34,43],"C40/50":[40,3.5,35,48],"C45/55":[45,3.8,36,53],"C50/60":[50,4.1,37,58]};
+const DUC={A:[1.05,25,.1346],B:[1.08,50,.0722],C:[1.08,75,.0493],S:[1,11.11,.2593]};
+const FY={400:[1.7391,.6681],500:[2.1739,.6169]};
+const DAL={"12+4":[2.6,.16,.04],"16+4":[2.85,.2,.04],"20+4":[3.3,.24,.04],"25+5":[4,.3,.05],"12+8":[3.6,.2,.08],"16+8":[3.85,.24,.08]};
+const REV={"revêtement":.6,"forme de pente":.88,"étanchéité":.12,"enduit dalle":.27,"rien":0};
+const CAT={A:[1.5,.3],B:[2.5,.3],C1:[2.5,.6],C2:[4,.6],C3:[4,.6],C4:[5,.6],C5:[5,.6],D1:[5,.6],D2:[5,.6],E1:[7.5,.8],"F(≤30kN)":[2.3,.6],"F(≤160kN)":[5,.6]};
+const EXP=["X0","XC1","XC2","XC3","XC4","XD1","XS1","XD2","XS2","XD3","XS3"];
+const CMIN={S1:[10,10,10,10,15,20,20,25,25,30,30],S2:[10,10,15,15,25,25,25,30,30,35,35],S3:[10,10,20,20,25,30,30,35,35,40,40],S4:[10,15,25,25,30,35,35,40,40,45,45],S5:[15,20,30,30,35,40,40,45,45,50,50],S6:[10,25,35,35,40,45,45,50,50,55,55]};
+const WK=[.4,.4,.3,.3,.3,.2,.2,.2,.2,.2,.2];
+const DIA=[6,8,10,12,14,16,20,25,32,40];
+const Ab=(n,d)=>Math.round(n*Math.PI*d*d/400*100)/100;
+const $=i=>document.getElementById(i),F=(x,n=2)=>isFinite(x)?(+x).toLocaleString('fr-FR',{minimumFractionDigits:n,maximumFractionDigits:n}):'–';
+const ld=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+
+/* ---------- 1. Prédimensionnement ---------- */
+function pre(L,Q){const h=(L>=6&&Q>=4)?L/20:L/22.5;return[h,h<.16?"12+4":h<.2?"16+4":h<.24?"20+4":"25+5"]}
+let loc=ld('loc')||[["DN1",3.997,1.5],["DN2",4.15,1.5],["DN3",2.15,1.5],["DN4",4.125,1.5],["DN5",2.15,1.5],["DN6",4.119,1.5]];
+function drawPre(){let h='<tr><th>Local</th><th>Lx (m)</th><th>Q (kN/m²)</th><th>h (m)</th><th>Choix</th><th class="no"></th></tr>';
+loc.forEach((l,i)=>{const[x,c]=pre(l[1],l[2]);h+=`<tr><td><input style="width:80px" value="${l[0]}" onchange="loc[${i}][0]=this.value;sv('loc',loc)"></td><td><input type="number" step=".01" style="width:90px" value="${l[1]}" onchange="loc[${i}][1]=+this.value;sv('loc',loc);drawPre()"></td><td><input type="number" step=".1" style="width:90px" value="${l[2]}" onchange="loc[${i}][2]=+this.value;sv('loc',loc);drawPre()"></td><td class="v">${F(x,4)}</td><td class="v">${c}</td><td class="no"><button class="b s" onclick="useLoc(${i})">Calculer →</button><button class="b s" onclick="loc.splice(${i},1);sv('loc',loc);drawPre()">✕</button></td></tr>`});$('pre').innerHTML=h}
+function addLoc(){loc.push(["DN"+(loc.length+1),3,1.5]);sv('loc',loc);drawPre()}
+function useLoc(i){p.nom=loc[i][0];p.Lx=loc[i][1];p.Ln=Math.max(.1,+(loc[i][1]-.2).toFixed(2));p.type=pre(loc[i][1],loc[i][2])[1];p.Q=loc[i][2];tab('t2');drawForm();run()}
+
+/* ---------- 2. Calcul ---------- */
+let p=Object.assign({nom:"N1",Lx:3.4,Ln:3.2,type:"16+4",e:.6,bw:.12,r0:"revêtement",r1:"enduit dalle",r2:"rien",r3:"revêtement",cat:"B",Q:2.5,beton:"C20/25",duc:"B",fyk:400,diag:"PALIER",expo:"XC1",struct:"S4",n1:2,d1:10,n2:1,d2:10,chap:10,eph:8,brins:1,theta:45,K:1,dmode:"c",RH:50,t0:28,duree:"longue",k4:.25},ld('p')||{});
+const FLD=[["Géométrie",[["nom","Repère nervure","t"],["Lx","Portée de calcul Lx (m)","n",.01],["Ln","Portée nue (m)","n",.01],["type","Type de dalle","s",Object.keys(DAL)],["e","Entraxe (m)","n",.01],["bw","Largeur de l'âme bw (m)","n",.005],["dmode","Hauteur utile d","s",[["c","0,9·h (classeur)"],["r","d réel (enrobage)"]]]]],
+["Charges",[["r0","Revêtement 1","s",Object.keys(REV)],["r1","Revêtement 2","s",Object.keys(REV)],["r2","Revêtement 3","s",Object.keys(REV)],["r3","Revêtement 4","s",Object.keys(REV)],["cat","Catégorie d'usage","s",Object.keys(CAT)],["Q","Q (kN/m²)","n",.1]]],
+["Matériaux",[["beton","Béton","s",Object.keys(BET)],["duc","Ductilité acier","s",Object.keys(DUC)],["fyk","fyk (MPa)","s",[400,500]],["diag","Diagramme acier","s",["PALIER","DROITE INCLINEE"]],["struct","Classe structurale","s",Object.keys(CMIN)],["expo","Classe d'exposition","s",EXP],["RH","Humidité relative (%)","n",1],["t0","t0 (jours)","n",1],["duree","Durée de chargement","s",["longue","courte"]]]],
+["Ferraillage adopté",[["n1","① nombre de barres","n",1],["d1","① diamètre HA (mm)","s",DIA],["n2","② nombre de barres","n",1],["d2","② diamètre HA (mm)","s",DIA],["chap","③ chapeau HA (mm)","s",DIA],["eph","④ épingle HA (mm)","s",DIA],["brins","Brins d'épingle (effort tranchant)","n",1]]],
+["Options",[["theta","θ bielles (°)","n",.1],["K","K flèche (1 / 1,3 / 1,5)","s",[1,1.3,1.5]],["k4","k4 (fissuration)","n",.005]]]];
+function drawForm(){let h='';FLD.forEach(([t,fs])=>{h+=`<div class="card"><h3>${t}</h3>`;fs.forEach(([k,l,ty,o])=>{h+=`<label><span>${l}</span>`;if(ty=='s')h+=`<select data-k="${k}">${o.map(x=>{const v=Array.isArray(x)?x[0]:x,tx=Array.isArray(x)?x[1]:x;return`<option value="${v}"${v==p[k]?' selected':''}>${tx}</option>`}).join('')}</select>`;else h+=`<input data-k="${k}" ${ty=='n'?`type="number" step="${o}"`:''} value="${p[k]}">`;h+='</label>'});h+='</div>'});
+h+='<p class="no"><button class="b" onclick="autoBars()">Proposer le ferraillage ①②</button><button class="b" onclick="addCah()">Ajouter au cahier</button></p>';$('form').innerHTML=h;
+document.querySelectorAll('[data-k]').forEach(el=>el.oninput=()=>{const k=el.dataset.k;p[k]=el.tagName=='SELECT'?(isNaN(el.value)||el.value===''?el.value:+el.value):(el.type=='number'?+el.value:el.value);if(k=='cat'){p.Q=CAT[p.cat][0];drawForm()}sv('p',p);run()})}
+function mat(p){const[fck,fctm,Ecm,fcm]=BET[p.beton],[K,euk,aAB]=DUC[p.duc],[eso,al]=FY[p.fyk];return{fck,fctm,Ecm,fcm,fcd:fck/1.5,eta:fck<50?1:1-(fck-50)/200,lam:fck<50?.8:.8-(fck-50)/400,K,euk,aAB,eso,al,fyd:p.fyk/1.15,eud:.9*euk,diag:p.diag}}
+function flex(M,b,d,dp,c){const mu=M/(c.eta*b*d*d*c.fcd*1000),ml=c.lam*c.al*(1-c.lam*c.al/2),o={mu,ml};
+if(mu>ml){const Ml=ml*c.eta*b*d*d*c.fcd*1000,dM=M-Ml;o.comp=true;o.au=c.al;o.piv="B";o.es=c.eso;o.ss=c.fyd;o.Asc=dM*10/(c.fyd*(d-dp));o.As=Ml*10/(c.fyd*(1-.4*c.al)*d)+o.Asc;o.hreq=Math.ceil(Math.sqrt(M/(b*c.eta*c.fcd*1000*ml))/.9/.05-1e-9)*.05}
+else{o.au=(1-Math.sqrt(1-2*mu))/c.lam;o.piv=o.au>c.aAB?"B":"A";o.es=o.piv=="B"?(1-o.au)/o.au*3.5:c.eud;o.ss=c.diag=="DROITE INCLINEE"?c.fyd*(1+(c.K-1)*(o.es-c.eso)/(c.euk-c.eso)):c.fyd;o.As=M*10/(o.ss*(1-.4*o.au)*d);o.Asc=0}return o}
+const nax=(As,n,be,bw,hf,d)=>{const a=n*As/1e4;let x=(-a+Math.sqrt(a*a+2*be*a*d))/be;if(x>hf){const B=2*a+2*(be-bw)*hf,C=2*a*d+(be-bw)*hf*hf;x=(-B+Math.sqrt(B*B+4*bw*C))/(2*bw)}return x};
+const Ifs=(x,As,n,be,bw,hf,d)=>be*x**3/3-(x>hf?(be-bw)*(x-hf)**3/3:0)+n*As/1e4*(d-x)**2;
+function calc(p){const c=mat(p),[w,ho,hf]=DAL[p.type],e=p.e,bw=p.bw,r={c,ho,hf,w};
+r.G=e*(w+[p.r0,p.r1,p.r2,p.r3].reduce((s,k)=>s+REV[k],0));r.Qn=p.Q*e;r.Pu=1.35*r.G+1.5*r.Qn;r.Ps=r.G+r.Qn;
+r.Med=r.Pu*p.Lx*p.Lx/8;r.Mser=r.Ps*p.Lx*p.Lx/8;
+const bi=Math.min((e-bw)/2,.2*(e/2)+.1*p.Ln,.2*p.Ln);r.beff=2*bi+bw;
+const fm=Math.max(p.d1,p.n2>0?p.d2:0);r.fm=fm;r.cnom=Math.ceil((Math.max(fm,CMIN[p.struct][EXP.indexOf(p.expo)],10)+10)/5)*5;
+r.d=p.dmode=="r"?ho-(r.cnom+fm/2)/1000:.9*ho;r.dp=ho-r.d;
+r.Mtu=c.eta*c.fcd*1000*r.beff*hf*(r.d-hf/2);r.T=r.Med>r.Mtu;
+let Mw=r.Med,b=r.beff,Af=0;if(r.T){const Mf=c.eta*c.fcd*1000*(r.beff-bw)*hf*(r.d-hf/2);Mw=r.Med-Mf;b=bw}
+r.fl=flex(Mw,b,r.d,r.dp,c);if(r.T)Af=c.eta*c.fcd*(r.beff-bw)*hf*1e4/r.fl.ss;r.Af=Af;r.As1=r.fl.As+Af;
+r.Ac=(ho-hf)*bw+r.beff*hf;r.Asmin=Math.max(.26*c.fctm*bw*r.d/p.fyk,.0013*bw*r.d)*1e4;r.Asmax=.04*r.Ac*1e4;
+r.Asr=Ab(p.n1,p.d1)+(p.n2>0?Ab(p.n2,p.d2):0);r.As=Math.max(r.Asr,r.Asmin);r.nb=p.n1+p.n2;
+r.okAs=r.Asr>=r.As1&&r.Asr<=r.Asmax;
+/* effort tranchant */
+r.VEd=r.Pu*p.Ln/2;const k=Math.min(1+Math.sqrt(200/(r.d*1000)),2),rl=Math.min(r.Asr/(bw*r.d*1e4),.02);
+r.k=k;r.rl=rl;r.vmin=.035*k**1.5*Math.sqrt(c.fck);r.VRdc=Math.max(.12*k*Math.cbrt(100*rl*c.fck),r.vmin)*bw*r.d*1000;
+r.VRdc0=.12*k*Math.cbrt(100*rl*c.fck)*bw*r.d*1000;r.needV=r.VEd>=r.VRdc;
+const z=.9*r.d,th=p.theta*Math.PI/180,cot=1/Math.tan(th),nu=.6*(1-c.fck/250);
+r.VRdmax=bw*z*nu*c.fcd*1000/(cot+1/cot);r.okVmax=r.VEd<=r.VRdmax;
+r.aws=r.VEd*1e3/(z*1e3*(p.fyk/1.15)*cot)*10;r.Asw=p.brins*Ab(1,p.eph);r.smax=.75*r.d;
+let s=r.needV?Math.min(r.Asw/r.aws,r.smax):r.smax;r.s=Math.max(.05,Math.floor(s/.05+1e-9)*.05);
+/* ELS */
+const n=15,x=nax(r.As,n,r.beff,bw,hf,r.d),I=Ifs(x,r.As,n,r.beff,bw,hf,r.d);r.x=x;r.I=I;r.sc=r.Mser*x/I*1e-3;r.ss=n*r.Mser*(r.d-x)/I*1e-3;
+r.lc=.6*c.fck;r.ls=.8*p.fyk;r.okEls=r.sc<=r.lc&&r.ss<=r.ls;
+/* fissuration */
+const h0=1000*2*bw*ho/(2*ho+bw),a1=Math.pow(35/c.fcm,.7),a2=Math.pow(35/c.fcm,.2),pr=1+(1-p.RH/100)/(.1*Math.cbrt(h0)),
+ phRH=c.fcm<=35?pr:(1+(1-p.RH/100)/(.1*Math.cbrt(h0))*a1)*a2;
+r.phi=phRH*(16.8/Math.sqrt(c.fcm))*(1/(.1+Math.pow(p.t0,.2)));r.Eeff=c.Ecm*1000/(1+r.phi);r.ae=200000/r.Eeff;
+r.Mqp=(r.G+BQ(p)*r.Qn)*p.Lx*p.Lx/8;r.xq=nax(r.As,r.ae,r.beff,bw,hf,r.d);r.Iq=Ifs(r.xq,r.As,r.ae,r.beff,bw,hf,r.d);
+r.ssq=r.ae*r.Mqp*(r.d-r.xq)/r.Iq*1e-3;r.hce=Math.min(2.5*(ho-r.d),(ho-r.xq)/3,ho/2);r.rp=r.As/1e4/(r.hce*bw);
+const kt=p.duree=="longue"?.4:.6;r.kt=kt;r.esm=Math.max((r.ssq-kt*c.fctm/r.rp*(1+r.ae*r.rp))/2e5,.6*r.ssq/2e5);
+r.phq=(p.n1*p.d1**2+(p.n2>0?p.n2*p.d2**2:0))/(p.n1*p.d1+(p.n2>0?p.n2*p.d2:0));
+r.k3=r.cnom<=25?3.4:3.4*Math.pow(25/r.cnom,2/3);r.scc=r.nb>1?(bw*1000-2*r.cnom)/(r.nb-1):1e9;r.cas=r.scc<=5*(r.cnom+fm/2)?1:2;
+r.sr=r.cas==1?r.k3*r.cnom+.8*.5*p.k4*r.phq/r.rp:1.3*(ho-r.xq)*1000;r.wk=r.sr*r.esm;r.wlim=WK[EXP.indexOf(p.expo)];r.okWk=r.wk<=r.wlim;
+/* flèche */
+r.rho=r.As/(r.Ac*1e4);r.ldA=p.Ln/r.d;r.ldL=ldlim(r.rho,c.fck,p.K);r.okLd=r.ldA<=r.ldL;
+r.cf=(r.beff/bw>3?.8:1)*Math.min(1.5,310/r.ssq);r.ldL2=r.ldL*r.cf;r.okLd2=r.ldA<=r.ldL2;
+r.all=r.okAs&&!r.fl.comp&&r.okVmax&&r.okEls&&r.okWk&&r.okLd;return r}
+const BQ=p=>CAT[p.cat]?CAT[p.cat][1]:.3;
+function ldlim(rho,fck,K){const r0=Math.sqrt(fck)*1e-3,q=r0/rho;return K*(rho<=r0?11+1.5*Math.sqrt(fck)*q+3.2*Math.sqrt(fck)*Math.pow(q-1,1.5):11+1.5*Math.sqrt(fck)*q)}
+function autoBars(){const r=calc(p),need=Math.max(r.As1,r.Asmin);let best=null;const D=[8,10,12,14,16,20];
+for(const a of D)for(const b of D)for(let n1=1;n1<=4;n1++)for(let n2=0;n2<=3;n2++){const m=Math.max(a,n2?b:0);if(n1+n2>Math.max(1,Math.floor((p.bw*1000-2*r.cnom+20)/(20+m))))continue;const s=Ab(n1,a)+(n2?Ab(n2,b):0);if(s<need)continue;const sc=s+(n1+n2)*.01+(n2&&a!=b?.02:0);if(!best||sc<best.sc)best={sc,n1,a,n2,b}}
+if(!best){alert("Aucune combinaison ne tient dans l'âme : augmenter bw, h ou le type de dalle.");return}
+Object.assign(p,{n1:best.n1,d1:best.a,n2:best.n2,d2:best.n2?best.b:best.a});sv('p',p);drawForm();run()}
+const T=(l,v,u='',st='')=>`<tr><td>${l}</td><td class="v ${st}">${v}</td><td>${u}</td></tr>`,V=ok=>ok?'<span class="ok">✔ vérifié</span>':'<span class="ko">✘ non vérifié</span>';
+function run(){let r;try{r=calc(p)}catch(e){$('res').innerHTML='<div class="card ko">Données incomplètes</div>';return}const c=r.c,f=r.fl;
+$('ban').innerHTML=[["ELU flexion",r.okAs&&!f.comp,`As ${F(r.Asr)} / ${F(r.As1)} cm²`],["Effort tranchant",r.okVmax,r.needV?"armatures requises":"béton seul"],["ELS contraintes",r.okEls,`σc ${F(r.sc)} · σs ${F(r.ss,0)}`],["Fissuration",r.okWk,`wk ${F(r.wk,3)} / ${F(r.wlim,1)} mm`],["Flèche (l/d)",r.okLd,`${F(r.ldA)} / ${F(r.ldL)}`]].map(([a,o,s])=>`<div class="${o?'ok':'ko'}">${a}<small>${o?'✔':'✘'} ${s}</small></div>`).join('');
+$('res').innerHTML=`<div class="card"><h3>Charges et section</h3><table>${T('G nervure',F(r.G,3),'kN/m')+T('Q nervure',F(r.Qn,3),'kN/m')+T('Pelu = 1,35G + 1,5Q',F(r.Pu,3),'kN/m')+T('Pels = G + Q',F(r.Ps,3),'kN/m')+T('Med = Pelu·Lx²/8',F(r.Med),'kN·m')+T('Mser = Pels·Lx²/8',F(r.Mser),'kN·m')+T('beff = beff1 + beff2 + bw',F(r.beff,3),'m')+T('hf / ho / d',`${F(r.hf,2)} / ${F(r.ho,2)} / ${F(r.d,3)}`,'m')+T('Cnom (enrobage)',r.cnom,'mm')}</table></div>
+<div class="card"><h3>ELU – flexion simple</h3><table>${T('Mtu = η·fcd·beff·hf·(d − hf/2)',F(r.Mtu),'kN·m')+T('Section',r.T?'en T':'rectangulaire (b = beff)','')+T('μ',F(f.mu,4))+T('μl',F(f.ml,4),'',f.comp?'ko':'')+T('αu',F(f.au,4))+T('Pivot',f.piv)+T('εs1',F(f.es,3),'‰')+T('σs1',F(f.ss,1),'MPa')+T('As1 calculée',F(r.As1),'cm²')+(f.comp?T('As′ (aciers comprimés)',F(f.Asc),'cm²','ko')+T('h conseillé sans aciers comprimés',F(f.hreq,2),'m'):'')+T('As min / As max',`${F(r.Asmin)} / ${F(r.Asmax)}`,'cm²')+T('As adoptée (①+②)',F(r.Asr),'cm²',r.okAs?'ok':'ko')+T('Conclusion',r.okAs?'bon choix':'changer le choix')}</table>${f.comp?'<p class="ko">μ &gt; μl : mettre des aciers comprimés ou changer le coffrage.</p>':''}</div>
+<div class="card"><h3>Effort tranchant</h3><table>${T('VEd = Pelu·Ln/2',F(r.VEd),'kN')+T('k',F(r.k,3))+T('ρl',F(r.rl,5))+T('VRd,c (classeur)',F(r.VRdc0),'kN')+T('v min → VRd,c retenu = max',`${F(r.vmin,3)} MPa → ${F(r.VRdc)}`,'kN')+T('Conclusion',r.needV?'calcul d\'armatures d\'effort tranchant':'pas besoin d\'armatures d\'effort tranchant')+T('VRd,max',F(r.VRdmax),'kN',r.okVmax?'ok':'ko')+(r.needV?T('Asw/s requis',F(r.aws),'cm²/m')+T('Épingles ④ HA'+p.eph+' ('+p.brins+' brin)',`e = ${F(r.s*100,0)}`,'cm'):T('Épingles ④ constructives',`e = ${F(r.s*100,0)}`,'cm'))}</table></div>
+<div class="card"><h3>ELS – contraintes (n = 15)</h3><table>${T('x1 (axe neutre)',F(r.x*100),'cm')+T('I',F(r.I*1e8,0),'cm⁴')+T('σc ≤ 0,6·fck',`${F(r.sc)} ≤ ${F(r.lc)}`,'MPa',r.sc<=r.lc?'ok':'ko')+T('σs1 ≤ 0,8·fyk',`${F(r.ss,1)} ≤ ${F(r.ls,0)}`,'MPa',r.ss<=r.ls?'ok':'ko')}</table></div>
+<div class="card"><h3>Fissuration (EC2 §7.3.4)</h3><table>${T('φ(∞,t0) · αe = Es/Ec,eff',`${F(r.phi,3)} · ${F(r.ae,2)}`)+T('Mqp = (G + ψ2·Q)·Lx²/8',F(r.Mqp),'kN·m')+T('x (section fissurée)',F(r.xq*100),'cm')+T('σs,qp',F(r.ssq,1),'MPa')+T('hc,eff / ρp,eff',`${F(r.hce*100,1)} cm / ${F(r.rp,4)}`)+T('εsm − εcm',F(r.esm*1e3,3),'‰')+T('Cas / k3 / φeq',`cas ${r.cas} / ${F(r.k3,2)} / ${F(r.phq,1)} mm`)+T('sr,max',F(r.sr,0),'mm')+T('wk = sr,max·(εsm − εcm)',F(r.wk,3),'mm',r.okWk?'ok':'ko')+T('wk,lim',F(r.wlim,1),'mm')+T('Conclusion',r.okWk?'fissuration vérifiée':'maîtrise de la fissuration non assurée')}</table></div>
+<div class="card"><h3>Flèche – limitation l/d</h3><table>${T('l/d = Ln/d',F(r.ldA))+T('ρ = As / Ac (section en T)',F(r.rho*100,3),'%')+T('(l/d) limite – abaque, K = '+p.K,F(r.ldL),'',r.okLd?'ok':'ko')+T('Conclusion (abaque)',r.okLd?'flèche vérifiée':'changer le coffrage')+T('Vérif. renforcée (×0,8 si beff/bw > 3 ; ×310/σs)',`${F(r.ldL2)} → ${r.okLd2?'ok':'non vérifié'}`,'',r.okLd2?'ok':'ko')}</table><div id="abq"></div></div>
+<div class="card"><h3>Section de la nervure</h3><div id="sec"></div></div>`;
+$('abq').innerHTML=abaque(r);$('sec').innerHTML=coupe(p,r)}
+function abaque(r){const K=p.K,W=520,H=420,x0=56,y0=20,pw=440,ph=350,y1=12*K,y2=36*K,X=v=>x0+(v-.2)/1.8*pw,Y=v=>y0+ph-(v-y1)/(y2-y1)*ph;let s=`<svg viewBox="0 0 ${W} ${H}" style="max-width:560px;width:100%"><rect x="${x0}" y="${y0}" width="${pw}" height="${ph}" fill="none" stroke="#888"/>`;
+for(let v=.2;v<=2.001;v+=.2)s+=`<line x1="${X(v)}" x2="${X(v)}" y1="${y0}" y2="${y0+ph}" stroke="#8884" /><text x="${X(v)-9}" y="${y0+ph+14}">${F(v,1)}</text>`;
+for(let i=0;i<=6;i++){const v=y1+(y2-y1)*i/6;s+=`<line y1="${Y(v)}" y2="${Y(v)}" x1="${x0}" x2="${x0+pw}" stroke="#8884"/><text x="${x0-30}" y="${Y(v)+4}">${F(v,1)}</text>`}
+[20,25,30,35,40,45,50].forEach(f=>{let d='';for(let v=.2;v<=2.0001;v+=.01){const y=ldlim(v/100,f,K);if(y>=y1&&y<=y2)d+=(d?'L':'M')+X(v).toFixed(1)+','+Y(y).toFixed(1)}const yl=ldlim(2/100,f,K);s+=`<path d="${d}" fill="none" stroke="${f==r.c.fck?'#1f77d0':'#888'}" stroke-width="${f==r.c.fck?2.5:1.3}"/><text x="${x0+pw+3}" y="${Y(yl)+4}">C${f}</text>`});
+const rp=r.rho*100,px=X(Math.min(Math.max(rp,.2),2)),py=Y(Math.min(Math.max(r.ldA,y1),y2));s+=`<circle cx="${px}" cy="${py}" r="6" fill="${r.okLd?'#157f3b':'#c0262d'}"/><text x="${px+8}" y="${py-8}" style="font-weight:700">(${F(rp,2)} %; ${F(r.ldA,1)})</text><text x="${x0+pw/2-10}" y="${H-4}">ρ [%]</text><text x="4" y="12">l/d</text></svg><p class="note">Abaque EC2 (K = ${K}, ρ' = 0) tracé à partir de l'équation 7.16 ; courbe en gras : béton retenu.</p>`;return s}
+const bub=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="9" fill="#fff" stroke="#1f4e8c" stroke-width="1.5"/><text x="${x}" y="${y+4}" text-anchor="middle" style="font-weight:700;font-size:12px">${n}</text>`;
+function coupe(p,r,full){const SC=full?340:300,W=620,x0=20,e=p.e,ho=r.ho,hf=r.hf,bw=p.bw,Hh=ho*SC,y0=60,ys=y0+(full?20:0);let s=`<svg viewBox="0 0 ${W} ${full?340:240}" style="width:100%;max-width:${full?760:640}px">`;
+const N=full?3:1,bx=[];if(full){s+=`<text x="${x0}" y="14">Répartition // nervures HA6 e=20</text><text x="330" y="14">Principaux ⟂ nervures HA6 e=20</text><line x1="${x0}" x2="${x0+N*e*SC}" y1="${ys+3}" y2="${ys+3}" stroke="#c0262d" stroke-width="2"/>`}
+for(let i=0;i<N;i++){const xa=x0+i*e*SC;s+=`<rect x="${xa}" y="${ys}" width="${e*SC}" height="${hf*SC}" fill="#bbb8"/><rect x="${xa+e*SC/2-bw*SC/2}" y="${ys+hf*SC}" width="${bw*SC}" height="${(ho-hf)*SC}" fill="#bbb8" stroke="#555"/>`;
+if(i==0||full)s+=`<rect x="${xa+(e-bw)*SC/2-(e-bw)*SC}" y="${ys+hf*SC}" width="0" height="0"/>`;
+s+=`<rect x="${xa}" y="${ys+hf*SC}" width="${(e-bw)*SC/2}" height="${(ho-hf)*SC}" fill="none" stroke="#777" stroke-dasharray="3"/><rect x="${xa+(e+bw)*SC/2}" y="${ys+hf*SC}" width="${(e-bw)*SC/2}" height="${(ho-hf)*SC}" fill="none" stroke="#777" stroke-dasharray="3"/>`;
+const cx=xa+e*SC/2,yb=ys+Hh-Math.max(6,r.cnom/1000*SC)-3,nt=r.nb;for(let k=0;k<nt;k++){const xx=nt==1?cx:cx-bw*SC/2+6+k*(bw*SC-12)/(nt-1);if(i==0)bx.push(xx);s+=`<circle cx="${xx}" cy="${yb}" r="${Math.max(2.5,(k<p.n1?p.d1:p.d2)/1000*SC/2*1.6)}" fill="#111"/>`}
+s+=`<line x1="${cx}" x2="${cx}" y1="${yb}" y2="${ys+3}" stroke="#1f77d0" stroke-width="2"/><circle cx="${cx}" cy="${ys+4}" r="3.5" fill="#1f77d0"/>`}
+{const cx0=x0+e*SC/2,yb0=ys+Hh-Math.max(6,r.cnom/1000*SC)-3,yl=ys+Hh+26;
+s+=`<line x1="${bx[0]}" y1="${yb0+3}" x2="${bx[0]-14}" y2="${yl-9}" stroke="#1f4e8c"/>`+bub(bx[0]-14,yl,1);
+if(p.n2>0){const xe=bx[bx.length-1];s+=`<line x1="${xe}" y1="${yb0+3}" x2="${xe+14}" y2="${yl-9}" stroke="#1f4e8c"/>`+bub(xe+14,yl,2)}
+s+=`<line x1="${cx0}" y1="${ys+4}" x2="${cx0+18}" y2="${ys-14}" stroke="#1f4e8c"/>`+bub(cx0+18,ys-20,3);
+const ye=ys+hf*SC+(ho-hf)*SC/2;s+=`<line x1="${cx0}" y1="${ye}" x2="${cx0-bw*SC/2-14}" y2="${ye}" stroke="#1f4e8c"/>`+bub(cx0-bw*SC/2-23,ye,4)}
+s+=`<text x="${x0+4}" y="${ys+Hh+22}">bas : ① ②</text><text x="${x0+N*e*SC+6}" y="${ys+4}">③ chapeau HA${p.chap}</text><text x="${x0+N*e*SC+6}" y="${ys+30}">④ épingle HA${p.eph}</text><text x="${x0+N*e*SC+6}" y="${ys+Hh}">${p.type} · e = ${F(e*100,0)} cm · bw = ${F(bw*100,0)} cm</text>`;
+if(full){const L=p.Lx,S2=(W-2*x0-20)/(L+.1),yy=ys+Hh+78,xs=x0+10,hE=ho*S2,cv=Math.max(3,r.cnom/1000*S2),m=Math.max(p.d1,p.n2>0?p.d2:0),hk=Math.max(4,Math.min(15*m/1000*S2,hE-2*cv)),yb=yy+hE-cv,yc=yy+cv,xr=xs+L*S2;
+s+=`<text x="${x0}" y="${yy-34}">Élévation – Lx = ${F(L)} m</text><rect x="${xs-10}" y="${yy-2}" width="10" height="${hE+4}" fill="#bbb"/><rect x="${xr}" y="${yy-2}" width="10" height="${hE+4}" fill="#bbb"/><rect x="${xs}" y="${yy}" width="${L*S2}" height="${hE}" fill="none" stroke="#555"/>`;
+s+=`<polyline points="${xs+cv},${yb-hk} ${xs+cv},${yb} ${xr-cv},${yb} ${xr-cv},${yb-hk}" fill="none" stroke="#111" stroke-width="2.5"/>`;
+if(p.n2>0)s+=`<polyline points="${xs+cv+4},${yb-hk} ${xs+cv+4},${yb-5} ${xr-cv-4},${yb-5} ${xr-cv-4},${yb-hk}" fill="none" stroke="#555" stroke-width="2"/>`;
+s+=`<line x1="${xs+cv}" x2="${xr-cv}" y1="${yc}" y2="${yc}" stroke="#1f77d0" stroke-width="2.5"/>`;
+for(let x=r.s/2;x<L;x+=r.s)s+=`<line x1="${xs+x*S2}" x2="${xs+x*S2}" y1="${yc}" y2="${yb}" stroke="#1f77d0"/>`;
+s+=bub(xs+L*S2*.3,yb+24,1)+`<line x1="${xs+L*S2*.3}" x2="${xs+L*S2*.3}" y1="${yb+15}" y2="${yb}" stroke="#1f4e8c"/>`;
+if(p.n2>0)s+=bub(xs+L*S2*.5,yb+24,2)+`<line x1="${xs+L*S2*.5}" x2="${xs+L*S2*.5}" y1="${yb+15}" y2="${yb-5}" stroke="#1f4e8c"/>`;
+s+=bub(xs+L*S2*.5,yy-16,3)+`<line x1="${xs+L*S2*.5}" x2="${xs+L*S2*.5}" y1="${yy-7}" y2="${yc}" stroke="#1f4e8c"/>`+bub(xs+1.5*r.s*S2,yy-16,4)+`<line x1="${xs+1.5*r.s*S2}" x2="${xs+1.5*r.s*S2}" y1="${yy-7}" y2="${yc+3}" stroke="#1f4e8c"/>`;
+s+=`<text x="${xs}" y="${yb+52}">① ${p.n1}HA${p.d1}${p.n2?'  ② '+p.n2+'HA'+p.d2:''}  ③ 1HA${p.chap}  ④ épingles HA${p.eph} e=${F(r.s*100,0)} cm</text><text x="${xs}" y="${yb+68}">Ancrage aux appuis : crochet 15φ = ${15*m} mm (HA${m})</text></svg>`;return s}return s+'</svg>'}
+
+/* ---------- 3. Cahier ---------- */
+let cah=ld('cah')||[];
+function addCah(){const r=calc(p);cah=cah.filter(x=>x.p.nom!=p.nom||x.p.Lx!=p.Lx||x.p.type!=p.type);cah.push({p:{...p},nb:cah.find(x=>x.p.nom==p.nom)?.nb||4});sv('cah',cah);drawCah();tab('t3')}
+const lit=(n,d)=>n>0?n+'HA'+d:'–';
+function drawCah(){let h='<table><tr><th>Nervure</th><th>Portée (m)</th><th>Plancher</th><th>Nombre</th><th>① inf.</th><th>② inf.</th><th>③ chapeau</th><th>④ épingles</th><th>As (cm²)</th><th>Verdict</th><th class="no"></th></tr>';
+cah.forEach((x,i)=>{const r=calc(x.p);h+=`<tr><td>${x.p.nom}</td><td class="v">${F(x.p.Lx)}</td><td>${x.p.type}</td><td><input type="number" style="width:60px" value="${x.nb}" onchange="cah[${i}].nb=+this.value;sv('cah',cah)"></td><td>${x.p.n1}HA${x.p.d1}</td><td>${lit(x.p.n2,x.p.d2)}</td><td>1HA${x.p.chap}</td><td>HA${x.p.eph} e=${F(r.s*100,0)}</td><td class="v">${F(r.Asr)}</td><td>${r.all?'<span class="ok">✔</span>':'<span class="ko">✘</span>'}</td><td class="no"><button class="b s" onclick="show(${i})">Détail</button><button class="b s" onclick="cah.splice(${i},1);sv('cah',cah);drawCah()">✕</button></td></tr>`});
+$('cah').innerHTML=h+'</table>'+(cah.length?'':'<p class="note">Aucune nervure : calculez une nervure puis « Ajouter au cahier ».</p>');$('plan').innerHTML=cah.length?cah.map((x,i)=>`<div style="break-inside:avoid"><b>${x.p.nom} – ${x.p.type} – ${x.nb} nervure(s)</b>${coupe(x.p,calc(x.p),true)}</div>`).join(''):''}
+function show(i){p={...cah[i].p};sv('p',p);drawForm();run();tab('t2')}
+function csv(){const rows=[["Nervure","Portée","Plancher","Nombre","①","②","③","④ HA","e épingle (cm)","As (cm²)"]];cah.forEach(x=>{const r=calc(x.p);rows.push([x.p.nom,x.p.Lx,x.p.type,x.nb,x.p.n1+"HA"+x.p.d1,lit(x.p.n2,x.p.d2),"1HA"+x.p.chap,x.p.eph,Math.round(r.s*100),r.Asr])});
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(["\ufeff"+rows.map(r=>r.join(";")).join("\n")],{type:'text/csv'}));a.download='cahier_ferraillage_nervures.csv';a.click()}
+
+/* ---------- 4. Métré ---------- */
+let mp=Object.assign({cr:15,maj:1.15,pas:50},ld('mp')||{});
+function metre(x){const p=x.p,r=calc(p),L=p.Lx,N=x.nb,R=[],hk=f=>2*mp.cr*f/1000;
+const add=(rep,phi,nb,Lu)=>{if(nb>0)R.push({rep,phi,nb,Lu,tot:nb*Lu*N})};
+add('①',p.d1,p.n1,L+hk(p.d1));add('②',p.d2,p.n2,L+hk(p.d2));add('③',p.chap,1,L);
+add('④',p.eph,Math.max(1,Math.ceil((L-r.s/2)/r.s-1e-9)),((r.ho-2*r.cnom/1000)+2*Math.max(5*p.eph,50)/1000)*p.brins);return R}
+const PW=(phi,L)=>phi*phi*L*mp.maj/162;
+function metData(){const M={};cah.forEach(x=>metre(x).forEach(l=>M[l.phi]=(M[l.phi]||0)+l.tot));return Object.keys(M).map(Number).sort((a,b)=>a-b).map(phi=>{const L=M[phi],w=PW(phi,L),s=mp.pas,up=Math.ceil(w/s-1e-9)*s;return{phi,L,w,lo:Math.floor(w/s+1e-9)*s,up,hi:up+s}})}
+function drawMet(){$('mcr').value=mp.cr;$('mmaj').value=mp.maj;$('mpas').value=mp.pas;
+['mcr','mmaj','mpas'].forEach(i=>$(i).onchange=()=>{mp={cr:+$('mcr').value||15,maj:+$('mmaj').value||1.15,pas:+$('mpas').value||50};sv('mp',mp);drawMet()});
+if(!cah.length){$('met').innerHTML='<div class="card note">Ajoute d\'abord des nervures au cahier de ferraillage.</div>';return}
+let h='';cah.forEach(x=>{const R=metre(x),T={};R.forEach(l=>T[l.phi]=(T[l.phi]||0)+l.tot);
+h+=`<div class="card"><h3>${x.p.nom} – ${x.p.type} – Lx = ${F(x.p.Lx)} m – ${x.nb} nervure(s)</h3><table><tr><th>Repère</th><th>Barre</th><th>Pièces / nervure</th><th>Longueur unitaire (m)</th><th>Linéaire total (m)</th></tr>`+R.map(l=>`<tr><td>${l.rep}</td><td>HA${l.phi}</td><td class="v">${l.nb}</td><td class="v">${F(l.Lu,3)}</td><td class="v">${F(l.tot)}</td></tr>`).join('')+`</table><p><b>Linéaire total par type :</b> ${Object.keys(T).map(k=>`HA${k} : ${F(T[k])} m · ${F(PW(k,T[k]))} kg`).join(' &nbsp;|&nbsp; ')}</p></div>`});
+const D=metData();h+=`<div class="card"><h3>Récapitulatif total des nervures</h3><table><tr><th>Barre</th><th>Linéaire total (m)</th><th>Poids D²·L·${F(mp.maj)}/162 (kg)</th><th>Proposition basse</th><th>Proposition recommandée (↑ pas de ${mp.pas})</th><th>Proposition haute</th></tr>`+D.map(d=>`<tr><td>HA${d.phi}</td><td class="v">${F(d.L)}</td><td class="v">${F(d.w)}</td><td class="v">${F(d.lo,0)} kg</td><td class="v ok">${F(d.up,0)} kg</td><td class="v">${F(d.hi,0)} kg</td></tr>`).join('')+`<tr><th>Total</th><th class="v">${F(D.reduce((s,d)=>s+d.L,0))}</th><th class="v">${F(D.reduce((s,d)=>s+d.w,0))}</th><th class="v">${F(D.reduce((s,d)=>s+d.lo,0),0)} kg</th><th class="v">${F(D.reduce((s,d)=>s+d.up,0),0)} kg</th><th class="v">${F(D.reduce((s,d)=>s+d.hi,0),0)} kg</th></tr></table></div>`;$('met').innerHTML=h}
+function csvM(){const rows=[["Nervure","Plancher","Nombre","Repère","Barre","Pièces/nervure","Lu (m)","Linéaire total (m)"]];cah.forEach(x=>metre(x).forEach(l=>rows.push([x.p.nom,x.p.type,x.nb,l.rep,"HA"+l.phi,l.nb,l.Lu.toFixed(3),l.tot.toFixed(2)])));rows.push([]);rows.push(["Barre","Linéaire (m)","Poids (kg)","Basse","Recommandée","Haute"]);metData().forEach(d=>rows.push(["HA"+d.phi,d.L.toFixed(2),d.w.toFixed(2),d.lo,d.up,d.hi]));
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(["\ufeff"+rows.map(r=>r.join(";")).join("\n")],{type:'text/csv'}));a.download='metre_nervures.csv';a.click()}
+function tab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('on',e.id==t));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));if(t=='t3')drawCah();if(t=='t4')drawMet()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+drawPre();drawForm();run();
+</script></body></html>
